@@ -1,0 +1,2 @@
+class Herbivore(object):
+    pass

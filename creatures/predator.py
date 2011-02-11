@@ -1,0 +1,2 @@
+class Predator(object):
+    pass

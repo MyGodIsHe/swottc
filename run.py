@@ -7,7 +7,27 @@ from OpenGL.GLUT import *
 import sys
 
 
-objects = []
+class World(object):
+
+    def __init__(self, cols, rows):
+        self.objects = []
+        for x in xrange(cols):
+            for y in xrange(rows):
+                color = Color()
+                color.set_bow(float(y)/rows)
+                obj = Rectangle( (x - cols/2, y - rows/2, -15.0), color )
+                self.objects.append(obj)
+
+    def DrawGLScene(self):
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) # очищаем экран
+        try:
+            for obj in self.objects:
+                obj.draw()
+        except:
+            import traceback
+            traceback.print_exc()
+            sys.exit()
+        glutSwapBuffers()
 
 
 class Color(object):
@@ -63,22 +83,18 @@ class Color(object):
             raise Exception((self.r, self.g, self.b))
 
 
-class Cub(object):
-    def __init__(self, position=(0,0,0), color=Color(), rotate=0):
+class Rectangle(object):
+    def __init__(self, position=(0,0,0), color=Color()):
         self.x, self.y, self.z = position
         self.color = color
-        self.rotate = rotate
 
     def draw(self):
         glLoadIdentity()  # восстанавливаем мировые координаты
         glTranslatef(self.x, self.y, self.z)
-        self.rotate  = (self.rotate + 1) % 360
-        glRotatef(self.rotate, 1.0, 0.0, 0.0)
-        glRotatef(self.rotate, 0.0, 1.0, 0.0)
-        glRotatef(self.rotate, 0.0, 0.0, 1.0)
         self.color.up(0.05)
         glColor4f(self.color.r, self.color.g, self.color.b, 1)
-        glRectf(-0.5,-0.5,0.5,0.5)
+        size = 0.5
+        glRectf(-size,-size,size,size)
 
 
 def InitGL(Width, Height):
@@ -94,6 +110,7 @@ def InitGL(Width, Height):
     gluPerspective(45.0, float(Width)/float(Height), 0.1, 1000.0)
     glMatrixMode(GL_MODELVIEW)
 
+
 def ReSizeGLScene(Width, Height):
     if Height == 0: Height = 1
     glViewport(0, 0, Width, Height)
@@ -102,41 +119,21 @@ def ReSizeGLScene(Width, Height):
     gluPerspective(45.0, float(Width)/float(Height), 0.1, 100.0)
     glMatrixMode(GL_MODELVIEW)
 
-def DrawGLScene():
-    global objects
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) # очищаем экран
-    try:
-        for obj in objects:
-            obj.draw()
-    except:
-        import traceback
-        traceback.print_exc()
-        sys.exit()
-    glutSwapBuffers()
 
 def KeyPressed(*args):
     if args[0]=="\033": sys.exit()
 
+
 def main():
-    global objects
-
-    cols = 10
-    rows = 10
-
-    for x in xrange(cols):
-        for y in xrange(rows):
-            color = Color()
-            color.set_bow(0)
-            obj = Cub( (x - cols/2, y - rows/2, -15.0), color )
-            objects.append(obj)
+    world = World(10, 10)
 
     glutInit(sys.argv)
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
     glutInitWindowSize(400, 300)
     glutInitWindowPosition(0, 0)
-    glutCreateWindow("OpenGL demo")
-    glutDisplayFunc(DrawGLScene)
-    glutIdleFunc(DrawGLScene)
+    glutCreateWindow("Life")
+    glutDisplayFunc(world.DrawGLScene)
+    glutIdleFunc(world.DrawGLScene)
     glutReshapeFunc(ReSizeGLScene)
     glutKeyboardFunc(KeyPressed)
     InitGL(400, 300)
