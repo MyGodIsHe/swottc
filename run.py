@@ -64,7 +64,7 @@ def create_world():
                          y=randint(0, world.rows - 1))
         world.add_creature(creature)
 
-    world.start(200)
+    world.start(1)
     return world
 
 

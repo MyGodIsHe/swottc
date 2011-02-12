@@ -1,6 +1,7 @@
-from threading import Timer
+from utils import Timer
 from OpenGL.GL import *
 from OpenGL.GLUT import *
+from constans import *
 
 
 class World(object):
@@ -72,8 +73,21 @@ class World(object):
         return self._field[x][y]
 
     def move_creature(self, creature):
-        print creature
-        pass
+        x, y = creature.x, creature.y
+        if creature.course == COURSE_NORTH:
+            x -= 1
+        elif creature.course == COURSE_EAST:
+            y += 1
+        elif creature.course == COURSE_SOUTH:
+            x += 1
+        elif creature.course == COURSE_WEST:
+            y -= 1
+        if self.check_position(x, y):
+            if self._field[x][y] is None:
+                #todo: need lock
+                self._field[creature.x][creature.y] = None
+                self._field[x][y] = creature
+                creature.x, creature.y = x, y
 
     def rectangle(self, x, y, color):
         glLoadIdentity()
