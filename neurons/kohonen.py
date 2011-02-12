@@ -36,3 +36,20 @@ class Kohonen(object):
                 m = w
                 k = i
         return k
+
+    def signal_eye(self, eye):
+        return self.signal(eye.front.predators,
+                           eye.front.herbivores,
+                           eye.front.plants,
+
+                           eye.left.predators,
+                           eye.left.herbivores,
+                           eye.left.plants,
+
+                           eye.right.predators,
+                           eye.right.herbivores,
+                           eye.right.plants,
+
+                           eye.action.predators,
+                           eye.action.herbivores,
+                           eye.action.plants)
