@@ -1,10 +1,7 @@
 from random import choice
-from creatures.herbivore import Herbivore
-from creatures.plant import Plant
-from creatures.predator import Predator
 from neurons import Kohonen
 from constans import *
-from utils import course_turn, course_turn
+from utils import course_turn
 
 
 class CreatureType(object):
@@ -46,15 +43,18 @@ class Eye(object):
     )
 
     def __init__(self, course, world, position):
+        from herbivore import Herbivore
+        from plant import Plant
+        from predator import Predator
         self.front = CreatureType()
         self.left = CreatureType()
         self.right = CreatureType()
         self.action = CreatureType()
 
         array = { COURSE_NORTH: Eye.north,
-          COURSE_EAST: Eye.east,
-          COURSE_SOUTH: Eye.south,
-          COURSE_WEST: Eye.west,
+                  COURSE_EAST: Eye.east,
+                  COURSE_SOUTH: Eye.south,
+                  COURSE_WEST: Eye.west,
         }[course]
 
         for xys, place in zip(array, [self.front, self.left, self.right, self.action]):
@@ -66,30 +66,27 @@ class Eye(object):
                     place.herbivores += 1
                 elif isinstance(creature, Plant):
                     place.plants += 1
-                else:
-                    raise Exception()
 
 
 class Base(object):
-    def __init__(self, position):
-        self.x = position[0]
-        self.y = position[0]
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
         self.turns = 0
 
-    def turn(self):
+    def turn(self, world):
         self.turns += 1
 
 
 class Mammals(Base):
-    def __init__(self, position):
-        self.x = position[0]
-        self.y = position[0]
+    def __init__(self, *args, **kwargs):
+        super(Mammals, self).__init__(*args, **kwargs)
         self.brain = Kohonen(12, 6, 4)
         self.course = choice((COURSE_SOUTH, COURSE_NORTH, COURSE_WEST, COURSE_EAST))
         self.turns = 0
 
     def turn(self, world):
-        self.turns += 1
+        super(Mammals, self).turn(world)
         eye = Eye(self.course, world, (self.x, self.y))
         answer = self.brain.signal_eye(eye)
         if ACTION_GO == answer:
