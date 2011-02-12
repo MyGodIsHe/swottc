@@ -5,6 +5,14 @@ from constans import *
 class Color(object):
     MAX = 1.0
     MIN = 0.0
+    color_by_name = {}
+
+    @staticmethod
+    def init(file_path):
+        for i in open(file_path).readlines():
+            i = i.split()
+            if len(i) == 4:
+                Color.color_by_name[i[3].lower()] = (float(i[0])/256, float(i[1])/256, float(i[2])/256)
 
     def __init__(self, r=1.0, g=0.0, b=0.0):
         self.r = r
@@ -54,19 +62,9 @@ class Color(object):
         else:
             raise Exception((self.r, self.g, self.b))
 
-
-class Rectangle(object):
-    def __init__(self, position=(0,0,0), color=Color()):
-        self.x, self.y, self.z = position
-        self.color = color
-
-    def draw(self):
-        glLoadIdentity()  # восстанавливаем мировые координаты
-        glTranslatef(self.x, self.y, self.z)
-        self.color.up(0.05)
-        glColor4f(self.color.r, self.color.g, self.color.b, 1)
-        size = 0.5
-        glRectf(-size,-size,size,size)
+    def by_name(self, name):
+        self.r, self.g, self.b = Color.color_by_name[name.lower()]
+        return self
 
 
 def course_turn(course, is_r):
