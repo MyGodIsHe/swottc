@@ -8,11 +8,13 @@ def sigmoid(value):
 
 class Kohonen(object):
     def __init__(self, ins, hidden, outs):
-        self.whi = self.woh = []
+        self.whi = []
+        self.woh = []
         for w in xrange(hidden):
-            self.whi.append([random.random() * 2 - 1 for i in ins])
+            self.whi.append([random.random() * 2 - 1 for i in xrange(ins)])
         for w in xrange(outs):
-            self.woh.append([random.random() * 2 - 1 for i in hidden])
+            ws = [random.random() * 2 - 1 for i in xrange(hidden)]
+            self.woh.append(ws)
 
     def signal(self, *pulses):
         hlayer = []
