@@ -91,7 +91,8 @@ class World(object):
 
     def rectangle(self, x, y, color):
         glLoadIdentity()
-        glTranslatef(x - self.cols/2, y - self.rows/2, -15.0)
+        k = max([self.cols, self.rows])
+        glTranslatef(x - self.cols/2, y - self.rows/2, -1.5 * k)
         glColor4f(color.r, color.g, color.b, 1)
         size = 0.5
         glRectf(-size, -size, size, size)

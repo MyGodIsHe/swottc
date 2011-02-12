@@ -47,19 +47,20 @@ def KeyPressed(world, *args):
 
 
 def create_world():
-    world = World(cols=10, rows=10)
+    world = World(cols=50, rows=50)
+    cnt = int(world.cols * world.rows * 0.01)
 
-    for i in xrange(5):
+    for i in xrange(cnt):
         creature = Predator(x=randint(0, world.cols - 1),
                             y=randint(0, world.rows - 1))
         world.add_creature(creature)
 
-    for i in xrange(5):
+    for i in xrange(cnt):
         creature = Herbivore(x=randint(0, world.cols - 1),
                              y=randint(0, world.rows - 1))
         world.add_creature(creature)
 
-    for i in xrange(5):
+    for i in xrange(cnt):
         creature = Plant(x=randint(0, world.cols - 1),
                          y=randint(0, world.rows - 1))
         world.add_creature(creature)
