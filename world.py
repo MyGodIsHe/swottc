@@ -1,16 +1,46 @@
+from threading import Timer
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 
 
 class World(object):
+    worlds = []
+
+    @staticmethod
+    def clear_all():
+        for world in World.worlds:
+            world.stop()
+        World.worlds = []
 
     def __init__(self, cols, rows):
         self.cols = cols
         self.rows = rows
         self._objects = []
         self._field = []
+        self._timer = None
         for x in xrange(cols):
             self._field.append([ None for y in xrange(rows)])
+
+        World.worlds.append(self)
+
+    def loop(self):
+        try:
+            for obj in self._objects:
+                obj.turn(self)
+        except:
+            import traceback
+            traceback.print_exc()
+            self._timer.cancel()
+            sys.exit()
+
+    def start(self, speed):
+        if self._timer:
+            raise Exception()
+        self._timer = Timer(speed, self.loop)
+        self._timer.start()
+
+    def stop(self):
+        self._timer.cancel()
 
     def check_position(self, x, y):
         return 0 <= x < self.cols and 0 <= y < self.rows
@@ -28,11 +58,11 @@ class World(object):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         try:
             for obj in self._objects:
-                obj.turn(self) #todo: need move to timer
                 self.rectangle(obj.x, obj.y, obj.color)
         except:
             import traceback
             traceback.print_exc()
+            self._timer.cancel()
             sys.exit()
         glutSwapBuffers()
 
@@ -42,6 +72,7 @@ class World(object):
         return self._field[x][y]
 
     def move_creature(self, creature):
+        print creature
         pass
 
     def rectangle(self, x, y, color):

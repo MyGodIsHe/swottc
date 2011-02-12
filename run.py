@@ -14,7 +14,7 @@ from random import randint
 
 
 def InitGL(Width, Height):
-    glClearColor(0.0, 0.0, 0.0, 0.0)
+    glClearColor(1.0, 1.0, 1.0, 0.0)
     glClearDepth(1.0)
     glDepthFunc(GL_LESS)
     glEnable(GL_DEPTH_TEST)
@@ -36,13 +36,18 @@ def ReSizeGLScene(Width, Height):
     glMatrixMode(GL_MODELVIEW)
 
 
-def KeyPressed(*args):
-    if args[0]=="\033": sys.exit()
+def KeyPressed(world, *args):
+    def wrapper(*args):
+        if args[0]=="\033":
+            world.stop()
+            sys.exit()
+        elif args[0]=="\x12":
+            restart()
+    return wrapper
 
 
-def main():
-    Color.init('./rgb.txt')
-    world = World(10, 10)
+def create_world():
+    world = World(cols=10, rows=10)
 
     for i in xrange(5):
         creature = Predator(x=randint(0, world.cols - 1),
@@ -59,6 +64,23 @@ def main():
                          y=randint(0, world.rows - 1))
         world.add_creature(creature)
 
+    world.start(200)
+    return world
+
+
+def restart():
+    World.clear_all()
+    world = create_world()
+    glutDisplayFunc(world.draw_gl_scene)
+    glutIdleFunc(world.draw_gl_scene)
+    glutKeyboardFunc(KeyPressed(world))
+
+
+def main():
+    Color.init('./rgb.txt')
+
+    world = create_world()
+
     glutInit(sys.argv)
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
     glutInitWindowSize(400, 300)
@@ -67,7 +89,7 @@ def main():
     glutDisplayFunc(world.draw_gl_scene)
     glutIdleFunc(world.draw_gl_scene)
     glutReshapeFunc(ReSizeGLScene)
-    glutKeyboardFunc(KeyPressed)
+    glutKeyboardFunc(KeyPressed(world))
     InitGL(400, 300)
     glutMainLoop()
 
