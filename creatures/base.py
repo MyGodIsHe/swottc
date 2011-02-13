@@ -78,6 +78,25 @@ class Base(object):
     def turn(self, world):
         self.turns += 1
 
+    def health_up(self, hp):
+        self.current_health += hp
+        if self.current_health > self.base_health:
+            self.current_health = self.base_health
+
+    def health_down(self, hp):
+        self.current_health -= hp
+        if self.current_health < 0:
+            self.base_health -= self.current_health
+            if self.base_health < 0:
+                self.base_health = 0
+
+    @property
+    def is_nothing(self):
+        return self.base_health == 0
+
+    @property
+    def is_alive(self):
+        return self.current_health > 0
 
 class Mammals(Base):
     def __init__(self, *args, **kwargs):

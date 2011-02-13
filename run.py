@@ -6,9 +6,6 @@ from OpenGL.GLU import *
 from OpenGL.GLUT import *
 import sys
 import logging
-from creatures.herbivore import Herbivore
-from creatures.plant import Plant
-from creatures.predator import Predator
 from utils import Color
 from world import World
 from random import randint
@@ -47,9 +44,13 @@ def KeyPressed(world, *args):
     return wrapper
 
 
-def create_world():
+def create_world(density):
+    from creatures import *
+
+    if density < 1 or density > 100:
+        sys.exit()
     world = World(cols=50, rows=50)
-    cnt = int(world.cols * world.rows * 0.01)
+    cnt = int(world.cols * world.rows * 0.01 * density)
 
     for i in xrange(cnt):
         creature = Predator(x=randint(0, world.cols - 1),
@@ -66,27 +67,27 @@ def create_world():
                          y=randint(0, world.rows - 1))
         world.add_creature(creature)
 
-    world.start(1)
+    world.start(0.1)
     return world
 
 
 def restart():
     World.clear_all()
-    world = create_world()
+    world = create_world(density=5)
     glutDisplayFunc(world.draw_gl_scene)
     glutIdleFunc(world.draw_gl_scene)
     glutKeyboardFunc(KeyPressed(world))
 
 
-def main():
+def main(density):
     LOG_FILENAME = 'debug.log'
     logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
 
     Color.init('./rgb.txt')
 
-    world = create_world()
+    world = create_world(density=density)
 
-    glutInit(sys.argv)
+    glutInit()
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
     glutInitWindowSize(400, 300)
     glutInitWindowPosition(0, 0)
@@ -100,4 +101,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    main(density=5)
