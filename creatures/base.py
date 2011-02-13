@@ -86,7 +86,8 @@ class Base(object):
     def health_down(self, hp):
         self.current_health -= hp
         if self.current_health < 0:
-            self.base_health -= self.current_health
+            self.base_health += self.current_health
+            self.current_health = 0
             if self.base_health < 0:
                 self.base_health = 0
 
