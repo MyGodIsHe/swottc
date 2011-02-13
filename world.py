@@ -76,7 +76,7 @@ class World(object):
 
     def move_creature(self, creature):
         cell, pos = self.get_creature_by_course(creature)
-        if cell is None:
+        if cell is None and pos is not None:
             #todo: need lock
             self._field[creature.x][creature.y] = None
             self._field[pos[0]][pos[1]] = creature
