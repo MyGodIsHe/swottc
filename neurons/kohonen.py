@@ -1,5 +1,6 @@
 import random
 import math
+import logging
 
 
 def sigmoid(value):
@@ -31,9 +32,9 @@ class Kohonen(object):
                 sum += hlayer[i] * w
             answers.append(sigmoid(sum))
 
-        k = 0
-        m = answers[k]
-        for i, w in enumerate(answers[1:]):
+        k = None
+        m = None
+        for i, w in enumerate(answers):
             if m < w:
                 m = w
                 k = i
