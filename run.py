@@ -45,7 +45,7 @@ def KeyPressed(world, *args):
 
 
 def create_world(density):
-    from creatures import *
+    from creatures import Predator, Herbivore, Plant
 
     if density < 1 or density > 100:
         sys.exit()
@@ -81,7 +81,7 @@ def restart():
 
 def main(density):
     LOG_FILENAME = 'debug.log'
-    logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
+    logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,filemode='w')
 
     Color.init('./rgb.txt')
 

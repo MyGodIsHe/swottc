@@ -28,3 +28,7 @@ class Predator(Mammals):
         elif t == Plant:
             food.health_down(1)
             self.health_down(1)
+
+    def hunger(self):
+        if self.turns % 10 == 0:
+            self.health_down(1)

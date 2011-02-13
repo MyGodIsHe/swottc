@@ -99,6 +99,7 @@ class Base(object):
     def is_alive(self):
         return self.current_health > 0
 
+
 class Mammals(Base):
     def __init__(self, *args, **kwargs):
         super(Mammals, self).__init__(*args, **kwargs)
@@ -122,6 +123,10 @@ class Mammals(Base):
                 self.eat(creature)
         else:
             raise Exception()
+        self.hunger()
 
     def eat(self):
+        raise Exception("Need to implement")
+
+    def hunger(self):
         raise Exception("Need to implement")

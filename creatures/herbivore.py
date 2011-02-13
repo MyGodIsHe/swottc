@@ -28,3 +28,7 @@ class Herbivore(Mammals):
         elif t == Plant:
             food.health_down(10)
             self.health_up(10)
+
+    def hunger(self):
+        if self.turns % 2 == 0:
+            self.health_down(1)

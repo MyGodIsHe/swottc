@@ -30,10 +30,9 @@ class World(object):
             for obj in self._objects:
                 obj.turn(self)
             deleted = filter(lambda obj: obj.is_nothing, self._objects)
-            if deleted:
-                logging.debug("DELETED: %r" % deleted)
             #todo: need lock
             for obj in deleted:
+                logging.debug("DELETED: %r, turns: %s" % (obj, obj.turns))
                 self._field[obj.x][obj.y] = None
                 self._objects.remove(obj)
         except:
