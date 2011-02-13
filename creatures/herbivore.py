@@ -8,3 +8,6 @@ class Herbivore(Mammals):
         self.base_health = 100
         self.current_health = self.base_health
         self.color = Color().by_name('YellowGreen')
+
+    def eat(self, creature):
+        pass

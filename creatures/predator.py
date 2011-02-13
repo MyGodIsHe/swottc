@@ -8,3 +8,6 @@ class Predator(Mammals):
         self.base_health = 100
         self.current_health = self.base_health
         self.color = Color().by_name('OrangeRed')
+
+    def eat(self, creature):
+        pass

@@ -5,6 +5,7 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
 import sys
+import logging
 from creatures.herbivore import Herbivore
 from creatures.plant import Plant
 from creatures.predator import Predator
@@ -78,6 +79,9 @@ def restart():
 
 
 def main():
+    LOG_FILENAME = 'debug.log'
+    logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
+
     Color.init('./rgb.txt')
 
     world = create_world()

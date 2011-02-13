@@ -2,6 +2,7 @@ from utils import Timer
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 from constans import *
+import logging
 
 
 class World(object):
@@ -30,7 +31,7 @@ class World(object):
                 obj.turn(self)
         except:
             import traceback
-            traceback.print_exc()
+            logging.debug(traceback.format_exc())
             self._timer.cancel()
             sys.exit()
 
@@ -62,7 +63,7 @@ class World(object):
                 self.rectangle(obj.x, obj.y, obj.color)
         except:
             import traceback
-            traceback.print_exc()
+            logging.debug(traceback.format_exc())
             self._timer.cancel()
             sys.exit()
         glutSwapBuffers()
@@ -73,6 +74,14 @@ class World(object):
         return self._field[x][y]
 
     def move_creature(self, creature):
+        cell, pos = self.get_creature_by_course(creature)
+        if cell is None:
+            #todo: need lock
+            self._field[creature.x][creature.y] = None
+            self._field[pos[0]][pos[1]] = creature
+            creature.x, creature.y = pos
+
+    def get_creature_by_course(self, creature):
         x, y = creature.x, creature.y
         if creature.course == COURSE_NORTH:
             x -= 1
@@ -83,11 +92,8 @@ class World(object):
         elif creature.course == COURSE_WEST:
             y -= 1
         if self.check_position(x, y):
-            if self._field[x][y] is None:
-                #todo: need lock
-                self._field[creature.x][creature.y] = None
-                self._field[x][y] = creature
-                creature.x, creature.y = x, y
+            return self._field[x][y], (x, y)
+        return None, None
 
     def rectangle(self, x, y, color):
         glLoadIdentity()

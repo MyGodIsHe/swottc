@@ -2,6 +2,7 @@ from random import choice
 from neurons import Kohonen
 from constans import *
 from utils import course_turn
+import logging
 
 
 class CreatureType(object):
@@ -96,7 +97,9 @@ class Mammals(Base):
         elif ACTION_RIGHT == answer:
             self.course = course_turn(self.course, True)
         elif ACTION_EAT == answer:
-            self.eat(creature)
+            creature, pos = world.get_creature_by_course(self)
+            if creature:
+                self.eat(creature)
         else:
             raise Exception()
 
