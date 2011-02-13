@@ -32,7 +32,7 @@ class World(object):
             deleted = filter(lambda obj: obj.is_nothing, self._objects)
             #todo: need lock
             for obj in deleted:
-                logging.debug("DELETED: %r, turns: %s" % (obj, obj.turns))
+                logging.debug("Dead: %r, turns: %s, history: %s" % (obj, obj.turns, repr(obj.history.read())))
                 self._field[obj.x][obj.y] = None
                 self._objects.remove(obj)
         except:

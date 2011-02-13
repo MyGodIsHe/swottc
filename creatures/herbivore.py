@@ -7,7 +7,7 @@ class Herbivore(Mammals):
         super(Herbivore, self).__init__(*args, **kwargs)
         self.base_health = 100
         self.current_health = self.base_health
-        self.color = Color().by_name('YellowGreen')
+        self.color = Color().by_name('Gold')
 
     def eat(self, food):
         from predator import Predator
@@ -15,19 +15,24 @@ class Herbivore(Mammals):
         t = type(food)
         if t == Predator:
             if food.is_alive:
-                food.health_down(10)
+                ch, bh = food.health_down(10)
+                self.history.append("Hit predator (%s)" % ch)
             else:
-                food.health_down(1)
-                self.health_down(1)
+                ch, bh = food.health_down(1)
+                self.health_down(bh)
+                self.history.append("Eat predator (%s)" % bh)
         elif t == Herbivore:
             if food.is_alive:
-                food.health_down(10)
+                ch, bh = food.health_down(10)
+                self.history.append("Hit herbivore (%s)" % ch)
             else:
-                food.health_down(1)
-                self.health_down(1)
+                ch, bh = food.health_down(1)
+                self.health_down(bh)
+                self.history.append("Eat herbivore (%s)" % bh)
         elif t == Plant:
-            food.health_down(10)
-            self.health_up(10)
+            ch, bh = food.health_down(10)
+            self.health_up(ch or bh)
+            self.history.append("Eat plant (%s)" % (ch or bh))
 
     def hunger(self):
         if self.turns % 2 == 0:

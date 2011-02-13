@@ -15,19 +15,24 @@ class Predator(Mammals):
         t = type(food)
         if t == Predator:
             if food.is_alive:
-                food.health_down(20)
+                ch, bh = food.health_down(20)
+                self.history.append("Hit predator (%s)" % ch)
             else:
-                food.health_down(10)
-                self.health_up(10)
+                ch, bh = food.health_down(10)
+                self.health_up(bh)
+                self.history.append("Eat predator (%s)" % bh)
         elif t == Herbivore:
             if food.is_alive:
-                food.health_down(50)
+                ch, bh = food.health_down(50)
+                self.history.append("Hit herbivore (%s)" % ch)
             else:
-                food.health_down(25)
-                self.health_up(25)
+                ch, bh = food.health_down(25)
+                self.health_up(bh)
+                self.history.append("Eat herbivore (%s)" % bh)
         elif t == Plant:
-            food.health_down(1)
-            self.health_down(1)
+            ch, bh = food.health_down(1)
+            self.health_down(ch or bh)
+            self.history.append("Eat plant (%s)" % 1)
 
     def hunger(self):
         if self.turns % 10 == 0:

@@ -69,11 +69,24 @@ class Eye(object):
                     place.plants += 1
 
 
+class History(object):
+    def __init__(self, creature):
+        self.events = []
+        self.creature = creature
+
+    def append(self, message):
+        self.events.append("Turn: %s, Message: %s" % (self.creature.turns, message))
+
+    def read(self):
+        return repr(self.events)
+
+
 class Base(object):
     def __init__(self, x, y):
         self.x = x
         self.y = y
         self.turns = 0
+        self.history = History(self)
 
     def turn(self, world):
         self.turns += 1
@@ -83,13 +96,32 @@ class Base(object):
         if self.current_health > self.base_health:
             self.current_health = self.base_health
 
-    def health_down(self, hp):
-        self.current_health -= hp
-        if self.current_health < 0:
-            self.base_health += self.current_health
-            self.current_health = 0
-            if self.base_health < 0:
+    def _base_health_down(self, hp):
+        if self.base_health > 0:
+            if hp > self.base_health:
+                hp_down = self.base_health
                 self.base_health = 0
+            else:
+                hp_down = hp
+                self.base_health -= hp
+        else:
+            hp_down = 0
+        return hp_down
+
+    def health_down(self, hp):
+        if self.current_health > 0:
+            if hp > self.current_health:
+                ch_down = self.current_health
+                self.current_health = 0
+                bh_down = self._base_health_down(hp - ch_down)
+            else:
+                ch_down = hp
+                self.current_health -= hp
+                bh_down = 0
+        else:
+            ch_down = 0
+            bh_down = self._base_health_down(hp)
+        return ch_down, bh_down
 
     @property
     def is_nothing(self):
