@@ -33,7 +33,6 @@ class World(object):
             import traceback
             logging.debug(traceback.format_exc())
             self._timer.cancel()
-            sys.exit()
 
     def start(self, speed):
         if self._timer:
@@ -57,6 +56,8 @@ class World(object):
         return True
 
     def draw_gl_scene(self):
+        if self._timer and self._timer.finished.is_set():
+            sys.exit()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         try:
             for obj in self._objects:
