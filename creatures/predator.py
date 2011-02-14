@@ -19,16 +19,18 @@ class Predator(Mammals):
                 self.history.append("Hit predator (%s)" % ch)
             else:
                 ch, bh = food.health_down(10)
-                self.health_up(bh)
-                self.history.append("Eat predator (%s)" % bh)
+                hp = self.health_up(bh)
+                self.reproductive_up(hp)
+                self.history.append("Eat predator (%s)" % hp)
         elif t == Herbivore:
             if food.is_alive:
                 ch, bh = food.health_down(50)
                 self.history.append("Hit herbivore (%s)" % ch)
             else:
                 ch, bh = food.health_down(25)
-                self.health_up(bh)
-                self.history.append("Eat herbivore (%s)" % bh)
+                hp = self.health_up(bh)
+                self.reproductive_up(hp)
+                self.history.append("Eat herbivore (%s)" % hp)
         elif t == Plant:
             ch, bh = food.health_down(1)
             self.health_down(ch or bh)
@@ -37,3 +39,9 @@ class Predator(Mammals):
     def hunger(self):
         if self.turns % 10 == 0:
             self.health_down(1)
+
+    def get_congener(self, eye):
+        return eye.predators
+
+    def get_child(self):
+        return Predator(x=self.x, y=self.y)

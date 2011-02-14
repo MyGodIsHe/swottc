@@ -2,6 +2,7 @@ from random import choice
 from neurons import Kohonen
 from constans import *
 from utils import course_turn
+from random import choice
 import logging
 
 
@@ -47,6 +48,7 @@ class Eye(object):
         from herbivore import Herbivore
         from plant import Plant
         from predator import Predator
+
         self.front = CreatureType()
         self.left = CreatureType()
         self.right = CreatureType()
@@ -58,15 +60,23 @@ class Eye(object):
                   COURSE_WEST: Eye.west,
         }[course]
 
+        self.predators = []
+        self.herbivores = []
+        self.plants = []
+
         for xys, place in zip(array, [self.front, self.left, self.right, self.action]):
             for xy in xys:
                 creature = world.get_creature(position[0] + xy[0], position[1] + xy[1])
-                if isinstance(creature, Predator):
+                t = type(creature)
+                if t == Predator:
                     place.predators += 1
-                elif isinstance(creature, Herbivore):
+                    self.predators.append(creature)
+                elif t == Herbivore:
                     place.herbivores += 1
-                elif isinstance(creature, Plant):
+                    self.herbivores.append(creature)
+                elif t == Plant:
                     place.plants += 1
+                    self.plants.append(creature)
 
 
 class History(object):
@@ -87,14 +97,19 @@ class Base(object):
         self.y = y
         self.turns = 0
         self.history = History(self)
+        self.reproductive = 0
 
     def turn(self, world):
         self.turns += 1
 
     def health_up(self, hp):
-        self.current_health += hp
-        if self.current_health > self.base_health:
+        if self.current_health + hp > self.base_health:
+            up_hp = self.base_health - self.current_health
             self.current_health = self.base_health
+        else:
+            up_hp = hp
+            self.current_health += hp
+        return up_hp
 
     def _base_health_down(self, hp):
         if self.base_health > 0:
@@ -141,7 +156,11 @@ class Mammals(Base):
 
     def turn(self, world):
         super(Mammals, self).turn(world)
+        if not self.is_alive:
+            return
         eye = Eye(self.course, world, (self.x, self.y))
+        if self.is_ready_reproduction:
+            self.reproduction(self.get_congener(eye), world)
         answer = self.brain.signal_eye(eye)
         if ACTION_GO == answer:
             world.move_creature(self)
@@ -162,3 +181,30 @@ class Mammals(Base):
 
     def hunger(self):
         raise Exception("Need to implement")
+
+    def get_congener(self, eye):
+        raise Exception("Need to implement")
+
+    def get_child(self):
+        raise Exception("Need to implement")
+
+    def reproduction(self, creatures, world):
+        variants = filter(lambda x: x.is_ready_reproduction, creatures)
+        if variants:
+            partner = choice(variants)
+            partner.reproductive = 0
+            self.reproductive = 0
+            child = self.get_child()
+            child.brain = Kohonen.generate(child.brain, self.brain, partner.brain)
+            is_add = world.add_creature_square(child)
+            self.history.append("Birth %s %s" % (is_add, child))
+
+    def reproductive_up(self, hp):
+        if self.reproductive + hp > self.base_health:
+            self.reproductive = self.base_health
+        else:
+            self.reproductive += hp
+
+    @property
+    def is_ready_reproduction(self):
+        return self.reproductive == self.base_health

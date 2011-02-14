@@ -31,9 +31,16 @@ class Herbivore(Mammals):
                 self.history.append("Eat herbivore (%s)" % bh)
         elif t == Plant:
             ch, bh = food.health_down(10)
-            self.health_up(ch or bh)
-            self.history.append("Eat plant (%s)" % (ch or bh))
+            hp = self.health_up(ch or bh)
+            self.reproductive_up(hp)
+            self.history.append("Eat plant (%s)" % hp)
 
     def hunger(self):
         if self.turns % 2 == 0:
             self.health_down(1)
+
+    def get_congener(self, eye):
+        return eye.herbivores
+
+    def get_child(self):
+        return Herbivore(x=self.x, y=self.y)

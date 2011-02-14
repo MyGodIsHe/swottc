@@ -56,3 +56,11 @@ class Kohonen(object):
                            eye.action.predators,
                            eye.action.herbivores,
                            eye.action.plants)
+
+    @staticmethod
+    def generate(child, one, two):
+        for i, ws in enumerate(child.whi):
+            child.whi[i] = one.whi[i] if random.randint(0, 1) else two.whi[i]
+        for i, ws in enumerate(child.woh):
+            child.woh[i] = one.woh[i] if random.randint(0, 1) else tho.woh[i]
+        return child

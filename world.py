@@ -54,12 +54,33 @@ class World(object):
 
     def add_creature(self, creature):
         if not self.check_position(creature.x, creature.y):
-            return False
+            raise Exception()
         if self._field[creature.x][creature.y] is not None:
             return False
         self._objects.append(creature)
         self._field[creature.x][creature.y] = creature
         return True
+
+    def add_creature_square(self, creature):
+        if self.add_creature(creature): return True
+        creature.x -= 1
+        creature.y -= 1
+        if self.add_creature(creature): return True
+        creature.x += 1
+        if self.add_creature(creature): return True
+        creature.x += 1
+        if self.add_creature(creature): return True
+        creature.y += 1
+        if self.add_creature(creature): return True
+        creature.y += 1
+        if self.add_creature(creature): return True
+        creature.x -= 1
+        if self.add_creature(creature): return True
+        creature.x -= 1
+        if self.add_creature(creature): return True
+        creature.y -= 1
+        if self.add_creature(creature): return True
+        return False
 
     def draw_gl_scene(self):
         if self._timer and self._timer.finished.is_set():

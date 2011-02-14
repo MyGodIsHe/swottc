@@ -73,7 +73,7 @@ def create_world(density):
 
 def restart():
     World.clear_all()
-    world = create_world(density=5)
+    world = create_world(density=3)
     glutDisplayFunc(world.draw_gl_scene)
     glutIdleFunc(world.draw_gl_scene)
     glutKeyboardFunc(KeyPressed(world))
@@ -101,4 +101,4 @@ def main(density):
 
 
 if __name__ == '__main__':
-    main(density=5)
+    main(density=3)
