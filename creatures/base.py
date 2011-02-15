@@ -60,7 +60,7 @@ class Eye(object):
                   COURSE_WEST: Eye.west,
         }[course]
 
-        self.creature = []
+        self.creatures = []
 
         for xys, place in zip(array, [self.front, self.left, self.right, self.action]):
             for xy in xys:
@@ -68,13 +68,13 @@ class Eye(object):
                 t = type(creature)
                 if t == Predator:
                     place.predators += 1
-                    self.creature.append(creature)
+                    self.creatures.append(creature)
                 elif t == Herbivore:
                     place.herbivores += 1
-                    self.creature.append(creature)
+                    self.creatures.append(creature)
                 elif t == Plant:
                     place.plants += 1
-                    self.creature.append(creature)
+                    self.creatures.append(creature)
 
 
 class History(object):
