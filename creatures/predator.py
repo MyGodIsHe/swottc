@@ -39,9 +39,3 @@ class Predator(Mammals):
     def hunger(self):
         if self.turns % 10 == 0:
             self.health_down(1)
-
-    def get_congener(self, eye):
-        return eye.predators
-
-    def get_child(self):
-        return Predator(x=self.x, y=self.y)

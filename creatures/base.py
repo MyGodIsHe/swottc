@@ -60,9 +60,7 @@ class Eye(object):
                   COURSE_WEST: Eye.west,
         }[course]
 
-        self.predators = []
-        self.herbivores = []
-        self.plants = []
+        self.creature = []
 
         for xys, place in zip(array, [self.front, self.left, self.right, self.action]):
             for xy in xys:
@@ -70,13 +68,13 @@ class Eye(object):
                 t = type(creature)
                 if t == Predator:
                     place.predators += 1
-                    self.predators.append(creature)
+                    self.creature.append(creature)
                 elif t == Herbivore:
                     place.herbivores += 1
-                    self.herbivores.append(creature)
+                    self.creature.append(creature)
                 elif t == Plant:
                     place.plants += 1
-                    self.plants.append(creature)
+                    self.creature.append(creature)
 
 
 class History(object):
@@ -160,7 +158,7 @@ class Mammals(Base):
             return
         eye = Eye(self.course, world, (self.x, self.y))
         if self.is_ready_reproduction:
-            self.reproduction(self.get_congener(eye), world)
+            self.reproduction(eye.creatures, world)
         answer = self.brain.signal_eye(eye)
         if ACTION_GO == answer:
             world.move_creature(self)
@@ -182,19 +180,13 @@ class Mammals(Base):
     def hunger(self):
         raise Exception("Need to implement")
 
-    def get_congener(self, eye):
-        raise Exception("Need to implement")
-
-    def get_child(self):
-        raise Exception("Need to implement")
-
     def reproduction(self, creatures, world):
-        variants = filter(lambda x: x.is_ready_reproduction, creatures)
+        variants = filter(lambda x: isinstance(x, self.__class__) and x.is_ready_reproduction, creatures)
         if variants:
             partner = choice(variants)
             partner.reproductive = 0
             self.reproductive = 0
-            child = self.get_child()
+            child = self.__class__(x=self.x, y=self.y)
             child.brain = Kohonen.generate(child.brain, self.brain, partner.brain)
             is_add = world.add_creature_square(child)
             self.history.append("Birth %s %s" % (is_add, child))

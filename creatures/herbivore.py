@@ -38,9 +38,3 @@ class Herbivore(Mammals):
     def hunger(self):
         if self.turns % 2 == 0:
             self.health_down(1)
-
-    def get_congener(self, eye):
-        return eye.herbivores
-
-    def get_child(self):
-        return Herbivore(x=self.x, y=self.y)
