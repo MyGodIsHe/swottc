@@ -81,18 +81,24 @@ class Window(object):
         cnt = int(world.cols * world.rows * 0.01 * self.density)
 
         for i in xrange(cnt):
-            creature = Predator(x=randint(0, world.cols - 1),
-                                y=randint(0, world.rows - 1))
+            pos = world.get_rnd_free_space()
+            if pos is None:
+                break
+            creature = Predator(x=pos[0], y=pos[1])
             world.add_creature(creature)
 
         for i in xrange(cnt):
-            creature = Herbivore(x=randint(0, world.cols - 1),
-                                 y=randint(0, world.rows - 1))
+            pos = world.get_rnd_free_space()
+            if pos is None:
+                break
+            creature = Herbivore(x=pos[0], y=pos[1])
             world.add_creature(creature)
 
         for i in xrange(cnt):
-            creature = Plant(x=randint(0, world.cols - 1),
-                             y=randint(0, world.rows - 1))
+            pos = world.get_rnd_free_space()
+            if pos is None:
+                break
+            creature = Plant(x=pos[0], y=pos[1])
             world.add_creature(creature)
 
         world.start(0.1)

@@ -3,6 +3,7 @@ from OpenGL.GL import *
 from OpenGL.GLUT import *
 from constans import *
 import logging
+from random import randint
 
 
 class World(object):
@@ -81,6 +82,19 @@ class World(object):
         creature.y -= 1
         if self.add_creature(creature): return True
         return False
+
+    def get_rnd_free_space(self):
+        free_cells = self.rows * self. cols - len(self._objects)
+        n = randint(1, free_cells)
+        if n == 0:
+            return None
+        for x in xrange(self.cols):
+            for y in xrange(self.rows):
+                if self._field[x][y] is None:
+                    n -= 1
+                    if n == 0:
+                        return (x, y)
+        return None
 
     def draw_gl_scene(self):
         if self._timer and self._timer.finished.is_set():
