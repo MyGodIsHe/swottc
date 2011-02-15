@@ -1,10 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from OpenGL.GL import *
-from OpenGL.GLU import *
-from OpenGL.GLUT import *
 import sys
+
+try:
+    from OpenGL.GL import *
+    from OpenGL.GLU import *
+    from OpenGL.GLUT import *
+except ImportError:
+    print "Need install OpenGL"
+    sys.exit()
+
 import logging
 from utils import Color
 from world import World
