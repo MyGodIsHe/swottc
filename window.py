@@ -16,6 +16,7 @@ class Window(object):
         self.density = options.density
         self.cols = options.cols
         self.rows = options.rows
+        self.is_force = False
 
         logging.basicConfig(filename=log, level=logging.DEBUG, filemode='w')
 
@@ -64,6 +65,14 @@ class Window(object):
             sys.exit()
         elif args[0]=="\x12":
             self.restart()
+        elif args[0]=="\x06":
+            self.is_force = not self.is_force
+            if self.is_force:
+                self.world.begin_force()
+                print "Begin Force"
+            else:
+                self.world.end_force()
+                print "End Force"
 
 
     def create_world(self):
@@ -79,21 +88,21 @@ class Window(object):
             if pos is None:
                 break
             creature = Predator(x=pos[0], y=pos[1])
-            world.add_creature(creature)
+            world.queue.append((i * 21, creature))
 
         for i in xrange(cnt):
             pos = world.get_rnd_free_space()
             if pos is None:
                 break
             creature = Herbivore(x=pos[0], y=pos[1])
-            world.add_creature(creature)
+            world.queue.append((i * 22, creature))
 
         for i in xrange(cnt):
             pos = world.get_rnd_free_space()
             if pos is None:
                 break
             creature = Plant(x=pos[0], y=pos[1])
-            world.add_creature(creature)
+            world.queue.append((i * 23, creature))
 
         world.start(0.1)
         return world

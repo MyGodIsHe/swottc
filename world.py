@@ -3,7 +3,7 @@ from OpenGL.GL import *
 from OpenGL.GLUT import *
 from constans import *
 import logging
-from random import randint
+from random import randint, choice
 
 
 class World(object):
@@ -21,13 +21,25 @@ class World(object):
         self._objects = []
         self._field = []
         self._timer = None
+        self.queue = []
         for x in xrange(cols):
             self._field.append([ None for y in xrange(rows)])
 
         World.worlds.append(self)
 
+    def check_queue(self):
+        newqueue = []
+        for turns, obj in self.queue:
+            if turns == 0:
+                self.add_creature(obj)
+            else:
+                newqueue.append((turns - 1, obj))
+        return newqueue
+
     def loop(self):
         try:
+            self.queue = self.check_queue()
+
             for obj in self._objects:
                 obj.turn(self)
             deleted = filter(lambda obj: obj.is_nothing, self._objects)
@@ -36,6 +48,7 @@ class World(object):
                 logging.debug("Dead: %r, turns: %s, history: %s" % (obj, obj.turns, repr(obj.history.read())))
                 self._field[obj.x][obj.y] = None
                 self._objects.remove(obj)
+            self.stabilize()
         except:
             import traceback
             logging.debug(traceback.format_exc())
@@ -44,11 +57,18 @@ class World(object):
     def start(self, speed):
         if self._timer:
             raise Exception()
+        self.init_count_objects = len(self._objects) + len(self.queue)
         self._timer = Timer(speed, self.loop)
         self._timer.start()
 
     def stop(self):
         self._timer.cancel()
+
+    def begin_force(self):
+        self._timer.is_force = True
+
+    def end_force(self):
+        self._timer.is_force = False
 
     def check_position(self, x, y):
         return 0 <= x < self.cols and 0 <= y < self.rows
@@ -144,3 +164,15 @@ class World(object):
         glColor4f(color.r, color.g, color.b, 1)
         size = 0.5
         glRectf(-size, -size, size, size)
+
+    def stabilize(self):
+        crnt = len(self._objects) + len(self.queue)
+        if crnt < self.init_count_objects:
+            from creatures import Predator, Herbivore, Plant
+            for i in xrange(self.init_count_objects - crnt):
+                pos = self.get_rnd_free_space()
+                if pos is None:
+                    break
+                cls = choice([Predator, Herbivore, Plant])
+                creature = cls(x=pos[0], y=pos[1])
+                self.add_creature(creature)

@@ -90,6 +90,7 @@ class Timer(Thread):
         self.args = args
         self.kwargs = kwargs
         self.finished = Event()
+        self.is_force = False
 
     def cancel(self):
         """Stop the timer if it hasn't finished yet"""
@@ -97,6 +98,7 @@ class Timer(Thread):
 
     def run(self):
         while not self.finished.is_set():
-            self.finished.wait(self.interval)
+            if not self.is_force:
+                self.finished.wait(self.interval)
             self.function(*self.args, **self.kwargs)
         self.finished.set()
