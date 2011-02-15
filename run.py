@@ -17,94 +17,99 @@ from world import World
 from random import randint
 
 
-def InitGL(Width, Height):
-    glClearColor(1.0, 1.0, 1.0, 0.0)
-    glClearDepth(1.0)
-    glDepthFunc(GL_LESS)
-    glEnable(GL_DEPTH_TEST)
-    glEnable(GL_LIGHTING)
-    glEnable(GL_LIGHT0)
-    glEnable(GL_COLOR_MATERIAL)
-    glMatrixMode(GL_PROJECTION)
-    glLoadIdentity()
-    gluPerspective(45.0, float(Width)/float(Height), 0.1, 1000.0)
-    glMatrixMode(GL_MODELVIEW)
+class Window(object):
+
+    def __init__(self, density):
+        self.density = density
+
+        LOG_FILENAME = 'debug.log'
+        logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,filemode='w')
+
+        Color.init('./rgb.txt')
+
+        self.world = self.create_world()
+
+        glutInit()
+        glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
+        glutInitWindowSize(400, 300)
+        glutInitWindowPosition(0, 0)
+        glutCreateWindow("Life")
+        glutDisplayFunc(self.world.draw_gl_scene)
+        glutIdleFunc(self.world.draw_gl_scene)
+        glutReshapeFunc(self.ReSizeGLScene)
+        glutKeyboardFunc(self.KeyPressed)
+        self.InitGL(400, 300)
 
 
-def ReSizeGLScene(Width, Height):
-    if Height == 0: Height = 1
-    glViewport(0, 0, Width, Height)
-    glMatrixMode(GL_PROJECTION)
-    glLoadIdentity()
-    gluPerspective(45.0, float(Width)/float(Height), 0.1, 100.0)
-    glMatrixMode(GL_MODELVIEW)
+    def InitGL(self, Width, Height):
+        glClearColor(1.0, 1.0, 1.0, 0.0)
+        glClearDepth(1.0)
+        glDepthFunc(GL_LESS)
+        glEnable(GL_DEPTH_TEST)
+        glEnable(GL_LIGHTING)
+        glEnable(GL_LIGHT0)
+        glEnable(GL_COLOR_MATERIAL)
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
+        gluPerspective(45.0, float(Width)/float(Height), 0.1, 1000.0)
+        glMatrixMode(GL_MODELVIEW)
 
 
-def KeyPressed(world, *args):
-    def wrapper(*args):
+    def ReSizeGLScene(self, Width, Height):
+        if Height == 0: Height = 1
+        glViewport(0, 0, Width, Height)
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
+        gluPerspective(45.0, float(Width)/float(Height), 0.1, 100.0)
+        glMatrixMode(GL_MODELVIEW)
+
+
+    def KeyPressed(self, *args):
         if args[0]=="\033":
-            world.stop()
+            self.world.stop()
             sys.exit()
         elif args[0]=="\x12":
-            restart()
-    return wrapper
+            self.restart()
 
 
-def create_world(density):
-    from creatures import Predator, Herbivore, Plant
+    def create_world(self):
+        from creatures import Predator, Herbivore, Plant
 
-    if density < 1 or density > 100:
-        sys.exit()
-    world = World(cols=50, rows=50)
-    cnt = int(world.cols * world.rows * 0.01 * density)
+        if self.density < 1 or self.density > 100:
+            sys.exit()
+        world = World(cols=50, rows=50)
+        cnt = int(world.cols * world.rows * 0.01 * self.density)
 
-    for i in xrange(cnt):
-        creature = Predator(x=randint(0, world.cols - 1),
-                            y=randint(0, world.rows - 1))
-        world.add_creature(creature)
+        for i in xrange(cnt):
+            creature = Predator(x=randint(0, world.cols - 1),
+                                y=randint(0, world.rows - 1))
+            world.add_creature(creature)
 
-    for i in xrange(cnt):
-        creature = Herbivore(x=randint(0, world.cols - 1),
+        for i in xrange(cnt):
+            creature = Herbivore(x=randint(0, world.cols - 1),
+                                 y=randint(0, world.rows - 1))
+            world.add_creature(creature)
+
+        for i in xrange(cnt):
+            creature = Plant(x=randint(0, world.cols - 1),
                              y=randint(0, world.rows - 1))
-        world.add_creature(creature)
+            world.add_creature(creature)
 
-    for i in xrange(cnt):
-        creature = Plant(x=randint(0, world.cols - 1),
-                         y=randint(0, world.rows - 1))
-        world.add_creature(creature)
-
-    world.start(0.1)
-    return world
+        world.start(0.1)
+        return world
 
 
-def restart():
-    World.clear_all()
-    world = create_world(density=3)
-    glutDisplayFunc(world.draw_gl_scene)
-    glutIdleFunc(world.draw_gl_scene)
-    glutKeyboardFunc(KeyPressed(world))
+    def restart(self):
+        World.clear_all()
+        self.world = self.create_world()
+        glutDisplayFunc(self.world.draw_gl_scene)
+        glutIdleFunc(self.world.draw_gl_scene)
 
 
-def main(density):
-    LOG_FILENAME = 'debug.log'
-    logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,filemode='w')
-
-    Color.init('./rgb.txt')
-
-    world = create_world(density=density)
-
-    glutInit()
-    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
-    glutInitWindowSize(400, 300)
-    glutInitWindowPosition(0, 0)
-    glutCreateWindow("Life")
-    glutDisplayFunc(world.draw_gl_scene)
-    glutIdleFunc(world.draw_gl_scene)
-    glutReshapeFunc(ReSizeGLScene)
-    glutKeyboardFunc(KeyPressed(world))
-    InitGL(400, 300)
-    glutMainLoop()
+    def loop(self):
+        glutMainLoop()
 
 
 if __name__ == '__main__':
-    main(density=3)
+    window = Window(density=3)
+    window.loop()
