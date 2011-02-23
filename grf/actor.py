@@ -70,8 +70,8 @@ def act_open(file_path):
                 frame.scale_y = frame[-1]
             frame.rotation = to_int()
             dont_jump = to_int()
-            if not dont_jump:
-                f.seek(f.tell() + 8)
+            if dont_jump:
+                f.seek(f.tell() + 12)
             if actions.version >= 5:
                 frame.size_x = to_int()
                 frame.size_y = to_int()
@@ -103,6 +103,9 @@ def act_open(file_path):
             subframes = []
             for i_sf in xrange(subframes_count):
                 subframes.append(read_frame())
+
+            #todo: wtf
+            f.seek(f.tell() + 8)
             #if version >= 2:
             #    extra_info = to_int()
             #    if extra_info:
@@ -110,7 +113,7 @@ def act_open(file_path):
             #        extra_x = to_int()
             #        extra_y = to_int()
             #        print "Extra:", extra_x, extra_y
-            animation.frames += subframes
+            animation.frames.append(subframes)
         actions.animations.append(animation)
 
     # sound

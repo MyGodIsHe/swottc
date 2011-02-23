@@ -9,6 +9,8 @@ from actor import act_open
 class Animation:
 
     def __init__(self, frames=None, time=100):
+        self.x = 0
+        self.y = 0
         self.frames = frames
         self.time = time
         self.work_time = 0
@@ -41,6 +43,10 @@ class Animation:
     def get_frame(self):
         return self.frames[self.frame]
 
+    def draw(self, surface):
+        frame = self.get_frame()
+        surface.blit(frame.sprite, (self.x + frame.offset_x, self.y + frame.offset_y))
+
 
 def setup_animations(actor, sprites):
     animations = []
@@ -52,16 +58,17 @@ def setup_animations(actor, sprites):
     for animation in actor.animations:
         image_frames = []
 
-        for frame in animation.frames:
-            if frame.direction != 0:
-                continue
-            sprite = sprites[frame.image_n]
-            sprite = pygame.image.fromstring(sprite.data,
-                                             (sprite.width, sprite.height),
-                                             'RGBA')
-            sprite = pygame.transform.rotate(sprite, -frame.rotation)
-            frame.sprite = sprite
-            image_frames.append(frame)
+        for subframes in animation.frames:
+            for frame in subframes:
+                if frame.direction != 0:
+                    continue
+                sprite = sprites[frame.image_n]
+                sprite = pygame.image.fromstring(sprite.data,
+                                                 (sprite.width, sprite.height),
+                                                 'RGBA')
+                sprite = pygame.transform.rotate(sprite, -frame.rotation)
+                frame.sprite = sprite
+                image_frames.append(frame)
         if len(image_frames):
             speed = animation.speed
             animations.append(Animation(image_frames, int(speed*40)))
@@ -75,8 +82,34 @@ if __name__ == '__main__':
 
     screen = pygame.Surface(display.get_size())
 
+    draw_objects = []
+
     wolfs = setup_animations(act_open('wolf.act'), spr_open('wolf.spr'))
-    wolfs = [w for i, w in enumerate(wolfs) if i % 4 == 0]
+    wolfs = [x for i, x in enumerate(wolfs) if i % 4 == 0]
+    y = 20
+    for i in wolfs:
+        i.x = 50
+        i.y = y
+        y += 100
+    draw_objects += wolfs
+
+    lunatics = setup_animations(act_open('lunatic.act'), spr_open('lunatic.spr'))
+    lunatics = [x for i, x in enumerate(lunatics) if i % 4 == 2]
+    y = 20
+    for i in lunatics:
+        i.x = 250
+        i.y = y
+        y += 100
+    draw_objects += lunatics
+
+    green_plant = setup_animations(act_open('green_plant.act'), spr_open('green_plant.spr'))
+    green_plant = [x for i, x in enumerate(green_plant) if i % 4 == 2]
+    y = 20
+    for i in green_plant:
+        i.x = 450
+        i.y = y
+        y += 100
+    draw_objects += green_plant
 
     clock = pygame.time.Clock()
 
@@ -91,16 +124,13 @@ if __name__ == '__main__':
                     done = True
                 
 
-        for wolf in wolfs:
-            wolf.update(dt)
+        for obj in draw_objects:
+            obj.update(dt)
 
         screen.fill((255,255,255))
 
-        y = 20
-        for wolf in wolfs:
-            frame = wolf.get_frame()
-            screen.blit(frame.sprite, (50 + frame.offset_x, y + frame.offset_y))
-            y += 100
+        for obj in draw_objects:
+            obj.draw(screen)
 
         display.blit(screen,(0,0))
         pygame.display.flip()

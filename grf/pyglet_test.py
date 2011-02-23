@@ -31,12 +31,13 @@ def setup_animations(actor, sprites):
     for animation in actor.animations:
         image_frames = []
         speed = 0.5*animation.speed/len(animation.frames)
-        for frame in animation.frames:
-            if frame.direction != 0:
-                continue
-            frame = apply_actor(sprites, frame)
-            animation_frame = (AnimationFrame(frame, speed))
-            image_frames.append(animation_frame)
+        for subframes in animation.frames:
+            for frame in subframes:
+                if frame.direction != 0:
+                    continue
+                frame = apply_actor(sprites, frame)
+                animation_frame = (AnimationFrame(frame, speed))
+                image_frames.append(animation_frame)
         if len(image_frames):
             animations.append(Animation(image_frames))
     return animations
