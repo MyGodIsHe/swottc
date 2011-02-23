@@ -43,6 +43,9 @@ class Frames(list):
         self.palette = []
         super(Frames, self).__init__()
 
+    def fill_rgbx(self, frame):
+        frame.data = [self.palette[i] for i in frame.uncompress()]
+
     def fill_rgba(self, frame):
         palette = self.palette[0:1] + [i[:3] + chr(255) for i in self.palette[1:]]
         frame.data = [palette[i] for i in frame.uncompress()]
