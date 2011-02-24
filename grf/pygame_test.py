@@ -44,8 +44,8 @@ class Animation:
         return self.frames[self.frame]
 
     def draw(self, surface):
-        frame = self.get_frame()
-        surface.blit(frame.sprite, (self.x + frame.offset_x, self.y + frame.offset_y))
+        for frame in self.get_frame():
+            surface.blit(frame.sprite, (self.x + frame.offset_x, self.y + frame.offset_y))
 
 
 def setup_animations(actor, sprites):
@@ -59,6 +59,7 @@ def setup_animations(actor, sprites):
         image_frames = []
 
         for subframes in animation.frames:
+            image_subframes = []
             for frame in subframes:
                 if frame.direction != 0:
                     continue
@@ -68,7 +69,9 @@ def setup_animations(actor, sprites):
                                                  'RGBA')
                 sprite = pygame.transform.rotate(sprite, -frame.rotation)
                 frame.sprite = sprite
-                image_frames.append(frame)
+                image_subframes.append(frame)
+            if image_subframes:
+                image_frames.append(image_subframes)
         if len(image_frames):
             speed = animation.speed
             animations.append(Animation(image_frames, int(speed*40)))
