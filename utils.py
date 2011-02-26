@@ -4,8 +4,8 @@ from constans import *
 
 
 class Color(object):
-    MAX = 1.0
-    MIN = 0.0
+    MAX = 255
+    MIN = 0
     color_by_name = {}
 
     @staticmethod
@@ -13,15 +13,18 @@ class Color(object):
         for i in open(file_path).readlines():
             i = i.split()
             if len(i) == 4:
-                Color.color_by_name[i[3].lower()] = (float(i[0])/256, float(i[1])/256, float(i[2])/256)
+                Color.color_by_name[i[3].lower()] = map(int, i[:3])
 
-    def __init__(self, r=1.0, g=0.0, b=0.0):
+    def __init__(self, r=0, g=0, b=0):
         self.r = r
         self.g = g
         self.b = b
 
     def __str__(self):
         return repr((self.r, self.g, self.b))
+
+    def list(self):
+        return (self.r, self.g, self.b)
 
     def correct(self, c):
         if c > Color.MAX:

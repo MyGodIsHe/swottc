@@ -2,6 +2,9 @@
 """ Extract sprites from Ragnarok data
     Format: http://mist.in/gratia/ro/spr/SprFileFormat.html
 """
+
+__all__ = ['Frame', 'Frames', 'srp_open']
+
 import sys
 import os
 import Image

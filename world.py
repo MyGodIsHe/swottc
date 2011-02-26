@@ -1,6 +1,4 @@
 from utils import Timer
-from OpenGL.GL import *
-from OpenGL.GLUT import *
 from constans import *
 import logging
 from random import randint, choice
@@ -116,20 +114,6 @@ class World(object):
                         return (x, y)
         return None
 
-    def draw_gl_scene(self):
-        if self._timer and self._timer.finished.is_set():
-            sys.exit()
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-        try:
-            for obj in self._objects:
-                self.rectangle(obj.x, obj.y, obj.color)
-        except:
-            import traceback
-            logging.debug(traceback.format_exc())
-            self._timer.cancel()
-            sys.exit()
-        glutSwapBuffers()
-
     def get_creature(self, x, y):
         if not self.check_position(x, y):
             return
@@ -156,14 +140,6 @@ class World(object):
         if self.check_position(x, y):
             return self._field[x][y], (x, y)
         return None, None
-
-    def rectangle(self, x, y, color):
-        glLoadIdentity()
-        k = max([self.cols, self.rows])
-        glTranslatef(x - self.cols/2, y - self.rows/2, -1.5 * k)
-        glColor4f(color.r, color.g, color.b, 1)
-        size = 0.5
-        glRectf(-size, -size, size, size)
 
     def stabilize(self):
         crnt = len(self._objects) + len(self.queue)

@@ -2,8 +2,12 @@
 """ Extract actions from Ragnarok data
     Format: http://mist.in/gratia/ro/spr/ActFileFormatFix.html
 """
+
+__all__ = ['Frame', 'Animation', 'Actor', 'act_open']
+
 import sys
 from struct import unpack
+
 
 
 class Frame(object):
