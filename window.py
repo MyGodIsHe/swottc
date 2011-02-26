@@ -113,8 +113,7 @@ class Window(object):
                 self.key_pressed()
 
                 # draw the black background onto the surface
-                self.surface.fill((255, 255, 255))
-
+                self.surface.fill(Color.by_name('white').list())
 
                 for obj in self.world._objects:
                     self.rectangle(obj.x, obj.y, obj.color.list())

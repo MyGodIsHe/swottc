@@ -7,7 +7,7 @@ class Plant(Base):
         super(Plant, self).__init__(*args, **kwargs)
         self.base_health = 100
         self.current_health = self.base_health
-        self.color = Color().by_name('YellowGreen')
+        self.color = Color.by_name('YellowGreen')
 
     def turn(self, world):
         super(Plant, self).turn(world)

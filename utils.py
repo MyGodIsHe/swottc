@@ -15,6 +15,10 @@ class Color(object):
             if len(i) == 4:
                 Color.color_by_name[i[3].lower()] = map(int, i[:3])
 
+    @staticmethod
+    def by_name(name):
+        return Color(*Color.color_by_name[name.lower()])
+
     def __init__(self, r=0, g=0, b=0):
         self.r = r
         self.g = g
@@ -65,10 +69,6 @@ class Color(object):
             self.b = self.correct(self.b - step)
         else:
             raise Exception((self.r, self.g, self.b))
-
-    def by_name(self, name):
-        self.r, self.g, self.b = Color.color_by_name[name.lower()]
-        return self
 
 
 def course_turn(course, is_r):

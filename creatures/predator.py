@@ -7,7 +7,7 @@ class Predator(Mammals):
         super(Predator, self).__init__(*args, **kwargs)
         self.base_health = 100
         self.current_health = self.base_health
-        self.color = Color().by_name('OrangeRed')
+        self.color = Color.by_name('OrangeRed')
 
     def eat(self, food):
         from herbivore import Herbivore
