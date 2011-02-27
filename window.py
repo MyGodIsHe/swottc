@@ -12,7 +12,8 @@ import settings
 
 class Window(object):
 
-    SIZE = 400, 400
+    SIZE = 800, 800
+    CELL_SIZE = 60
 
     def __init__(self, log, colors, options):
         self.density = options.density
@@ -34,6 +35,8 @@ class Window(object):
 
         # set up the window
         self.surface = pygame.display.set_mode(Window.SIZE, 0, 32)
+        self.world_surface = pygame.Surface((self.cols * Window.CELL_SIZE, self.rows * Window.CELL_SIZE))
+
         pygame.display.set_caption('Life')
 
         # set up fonts
@@ -75,13 +78,8 @@ class Window(object):
 
     def restart(self):
         World.clear_all()
+        self.is_force = False
         self.world = self.create_world()
-
-
-    def rectangle(self, x, y, color):
-        size = min(Window.SIZE) / max(self.world.cols, self.world.rows)
-        rect = pygame.Rect(x * size, y * size, size, size)
-        pygame.draw.rect(self.surface, color, rect)
 
 
     def key_pressed(self):
@@ -109,7 +107,6 @@ class Window(object):
 
     def loop(self):
         try:
-            size = min(Window.SIZE) / max(self.world.cols, self.world.rows)
             dt = 0
             # run the game loop
             while True:
@@ -117,14 +114,22 @@ class Window(object):
                 self.key_pressed()
 
                 # draw the black background onto the surface
-                self.surface.fill(self.background)
+                self.world_surface.fill(self.background)
 
                 for obj in self.world._objects:
                     obj.update(dt)
-                    obj.draw(self.surface, size)
+                    obj.draw(self.world_surface, Window.CELL_SIZE)
+
+                cursize = Window.SIZE
+                scaled_surf = pygame.transform.smoothscale(self.world_surface, cursize)
+                self.surface.fill(self.background)
+                scaled_surf_pos = scaled_surf.get_rect(centerx=Window.SIZE[0]/2, centery=Window.SIZE[1]/2)
+                self.surface.blit(scaled_surf, scaled_surf_pos)
+                pygame.display.flip()
 
                 # draw the window onto the screen
-                pygame.display.update()
+                #pygame.display.update()
+
                 dt = self.clock.tick(settings.FPS)
         except:
             import traceback

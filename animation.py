@@ -42,7 +42,11 @@ class Animation(object):
 
     def draw(self, surface, x, y):
         for frame in self.get_frame():
-            surface.blit(frame.sprite, (x + frame.offset_x, y + frame.offset_y))
+            w2 = frame.width / 2
+            h2 = frame.height / 2
+            x += frame.offset_x - w2
+            y += frame.offset_y - h2
+            surface.blit(frame.sprite, (x, y))
 
 
 class Actor(object):
@@ -67,6 +71,8 @@ class Actor(object):
                 image_subframes = []
                 for frame in subframes:
                     sprite = sprites[frame.image_n]
+                    frame.width = sprite.width
+                    frame.height = sprite.height
                     sprite = pygame.image.fromstring(sprite.data,
                                                      (sprite.width, sprite.height),
                                                      'RGBA')
@@ -89,7 +95,7 @@ class Actor(object):
         self.current_animation = Animation(self.animations[n][0], int(self.animations[n][1]*settings.FPS))
 
     def draw(self, surface, size):
-        self.current_animation.draw(surface, self.x * size, self.y * size)
+        self.current_animation.draw(surface, self.x * size + size / 2, self.y * size + size / 2)
 
     def update(self, dt):
         self.current_animation.update(dt)
