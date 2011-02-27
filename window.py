@@ -12,7 +12,7 @@ import settings
 
 class Window(object):
 
-    SIZE = 800, 800
+    SIZE = 600, 600
     CELL_SIZE = 60
 
     def __init__(self, log, colors, options):
@@ -22,14 +22,13 @@ class Window(object):
         self.is_force = False
         self.size = (self.cols * Window.CELL_SIZE, self.rows * Window.CELL_SIZE)
         self.scale = float(min(Window.SIZE)) / max(self.size)
-        print self.scale
         self.position = [Window.SIZE[0]/2, Window.SIZE[0]/2]
 
         logging.basicConfig(filename=log, level=logging.DEBUG, filemode='w')
 
         Color.init(colors)
 
-        self.background = Color.by_name('white').list()
+        self.background = Color.by_html('c6cfbf')
 
         self.world = self.create_world()
 

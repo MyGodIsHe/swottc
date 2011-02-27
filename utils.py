@@ -1,9 +1,8 @@
 from threading import Thread, Event
-from OpenGL.GL import *
 from constans import *
 
 
-class Color(object):
+class Color:
     MAX = 255
     MIN = 0
     color_by_name = {}
@@ -17,27 +16,24 @@ class Color(object):
 
     @staticmethod
     def by_name(name):
-        return Color(*Color.color_by_name[name.lower()])
+        return Color.color_by_name[name.lower()]
 
-    def __init__(self, r=0, g=0, b=0):
-        self.r = r
-        self.g = g
-        self.b = b
+    @staticmethod
+    def by_html(bytes):
+        return (int(bytes[0:2], 16),
+                int(bytes[2:4], 16),
+                int(bytes[4:6], 16))
 
-    def __str__(self):
-        return repr((self.r, self.g, self.b))
-
-    def list(self):
-        return (self.r, self.g, self.b)
-
-    def correct(self, c):
+    @staticmethod
+    def correct(c):
         if c > Color.MAX:
             return Color.MAX
         elif c < Color.MIN:
             return Color.MIN
         return c
 
-    def set_bow(self, k):
+    @staticmethod
+    def set_bow(k):
         if k < Color.MIN or k > Color.MAX:
             raise Exception()
         c = int(6.0 * k)
@@ -51,24 +47,26 @@ class Color(object):
         ]
         if c > 0:
             k = k % c
-        self.r, self.g, self.b = bow[c](k)
+        return bow[c](k)
 
-
-    def up(self, step):
-        if self.r == Color.MAX and Color.MIN <= self.g < Color.MAX and self.b == Color.MIN: # red
-            self.g = self.correct(self.g + step)
-        elif Color.MIN < self.r <= Color.MAX and self.g == Color.MAX and self.b == Color.MIN: # yellow
-            self.r = self.correct(self.r - step)
-        elif self.r == Color.MIN and self.g == Color.MAX and Color.MIN <= self.b < Color.MAX: # green
-            self.b = self.correct(self.b + step)
-        elif self.r == Color.MIN and Color.MIN < self.g <= Color.MAX and self.b == Color.MAX: # blue
-            self.g = self.correct(self.g - step)
-        elif Color.MIN <= self.r < Color.MAX and self.g == Color.MIN and self.b == Color.MAX: # blue
-            self.r = self.correct(self.r + step)
-        elif self.r == Color.MAX and self.g == Color.MIN and Color.MIN < self.b <= Color.MAX: # violet
-            self.b = self.correct(self.b - step)
+    @staticmethod
+    def up(color, step):
+        color = list(color)
+        if color[0] == Color.MAX and Color.MIN <= color[1] < Color.MAX and color[2] == Color.MIN: # red
+            color[1] = Color.correct(color[1] + step)
+        elif Color.MIN < color[0] <= Color.MAX and color[1] == Color.MAX and color[2] == Color.MIN: # yellow
+            color[0] = Color.correct(color[0] - step)
+        elif color[0] == Color.MIN and color[1] == Color.MAX and Color.MIN <= color[2] < Color.MAX: # green
+            color[2] = Color.correct(color[2] + step)
+        elif color[0] == Color.MIN and Color.MIN < color[1] <= Color.MAX and color[2] == Color.MAX: # blue
+            color[1] = Color.correct(color[1] - step)
+        elif Color.MIN <= color[0] < Color.MAX and color[1] == Color.MIN and color[2] == Color.MAX: # blue
+            color[0] = Color.correct(color[0] + step)
+        elif color[0] == Color.MAX and color[1] == Color.MIN and Color.MIN < color[2] <= Color.MAX: # violet
+            color[2] = Color.correct(color[2] - step)
         else:
-            raise Exception((self.r, self.g, self.b))
+            raise Exception(color)
+        return tuple(color)
 
 
 def course_turn(course, is_r):
