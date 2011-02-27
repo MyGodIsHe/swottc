@@ -20,6 +20,10 @@ class Window(object):
         self.cols = options.cols
         self.rows = options.rows
         self.is_force = False
+        self.size = (self.cols * Window.CELL_SIZE, self.rows * Window.CELL_SIZE)
+        self.scale = float(min(Window.SIZE)) / max(self.size)
+        print self.scale
+        self.position = [Window.SIZE[0]/2, Window.SIZE[0]/2]
 
         logging.basicConfig(filename=log, level=logging.DEBUG, filemode='w')
 
@@ -31,16 +35,17 @@ class Window(object):
 
         # set up pygame
         pygame.init()
+        pygame.display.set_caption('Life')
         self.clock = pygame.time.Clock()
 
         # set up the window
         self.surface = pygame.display.set_mode(Window.SIZE, 0, 32)
-        self.world_surface = pygame.Surface((self.cols * Window.CELL_SIZE, self.rows * Window.CELL_SIZE))
-
-        pygame.display.set_caption('Life')
+        self.world_surface = pygame.Surface(self.size)
 
         # set up fonts
         self.font = pygame.font.SysFont(None, 48)
+
+        self.downpos = None
 
 
     def create_world(self):
@@ -82,13 +87,13 @@ class Window(object):
         self.world = self.create_world()
 
 
-    def key_pressed(self):
+    def events(self):
         for event in pygame.event.get():
             if event.type == QUIT:
                 self.world.stop()
                 pygame.quit()
                 sys.exit()
-            if event.type == KEYUP:
+            elif event.type == KEYUP:
                 if event.key == K_ESCAPE:
                     self.world.stop()
                     pygame.quit()
@@ -103,7 +108,23 @@ class Window(object):
                     else:
                         self.world.end_force()
                         print "End Force"
-
+            elif event.type == MOUSEBUTTONDOWN:
+                self.downpos = event.pos
+                if event.button == 4:
+                    self.scale *= 1.05
+                elif event.button == 5:
+                    self.scale *= 0.95
+                #for i in range(2):
+                #    self.position[i] += (self.size[i]/2.0 - self.position[i]) * (1 - self.scale)
+            elif event.type == MOUSEBUTTONUP:
+                self.downpos = None
+            elif self.downpos and event.type == pygame.MOUSEMOTION:
+                dx = event.pos[0] - self.downpos[0]
+                dy = event.pos[1] - self.downpos[1]
+                if dx != 0 or dy != 0:
+                    self.position[0] += dx
+                    self.position[1] += dy
+                self.downpos = event.pos
 
     def loop(self):
         try:
@@ -111,7 +132,7 @@ class Window(object):
             # run the game loop
             while True:
                 # check for events
-                self.key_pressed()
+                self.events()
 
                 # draw the black background onto the surface
                 self.world_surface.fill(self.background)
@@ -120,15 +141,13 @@ class Window(object):
                     obj.update(dt)
                     obj.draw(self.world_surface, Window.CELL_SIZE)
 
-                cursize = Window.SIZE
+                cursize = [int(self.world_surface.get_width() * self.scale), int(self.world_surface.get_height() * self.scale)]
                 scaled_surf = pygame.transform.smoothscale(self.world_surface, cursize)
                 self.surface.fill(self.background)
-                scaled_surf_pos = scaled_surf.get_rect(centerx=Window.SIZE[0]/2, centery=Window.SIZE[1]/2)
+                scaled_surf_pos = scaled_surf.get_rect(centerx=self.position[0], centery=self.position[1])
                 self.surface.blit(scaled_surf, scaled_surf_pos)
-                pygame.display.flip()
 
-                # draw the window onto the screen
-                #pygame.display.update()
+                pygame.display.flip()
 
                 dt = self.clock.tick(settings.FPS)
         except:
