@@ -1,6 +1,8 @@
 from random import choice
+from animation import Actor
 from neurons import Kohonen
 from constans import *
+import settings
 from utils import course_turn
 from random import choice
 import logging
@@ -89,13 +91,15 @@ class History(object):
         return repr(self.events)
 
 
-class Base(object):
+class Base(Actor):
     def __init__(self, x, y):
         self.x = x
         self.y = y
         self.turns = 0
         self.history = History(self)
         self.reproductive = 0
+        name = settings.ANIMATIONS[self.__class__.__name__]
+        super(Base, self).__init__(name)
 
     def turn(self, world):
         self.turns += 1

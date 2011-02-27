@@ -7,12 +7,12 @@ import sys
 import logging
 from utils import Color
 from world import World
+import settings
 
 
 class Window(object):
 
     SIZE = 400, 400
-    FPS = 40
 
     def __init__(self, log, colors, options):
         self.density = options.density
@@ -23,6 +23,8 @@ class Window(object):
         logging.basicConfig(filename=log, level=logging.DEBUG, filemode='w')
 
         Color.init(colors)
+
+        self.background = Color.by_name('white').list()
 
         self.world = self.create_world()
 
@@ -107,21 +109,23 @@ class Window(object):
 
     def loop(self):
         try:
+            size = min(Window.SIZE) / max(self.world.cols, self.world.rows)
+            dt = 0
             # run the game loop
             while True:
                 # check for events
                 self.key_pressed()
 
                 # draw the black background onto the surface
-                self.surface.fill(Color.by_name('white').list())
+                self.surface.fill(self.background)
 
                 for obj in self.world._objects:
-                    self.rectangle(obj.x, obj.y, obj.color.list())
-
+                    obj.update(dt)
+                    obj.draw(self.surface, size)
 
                 # draw the window onto the screen
                 pygame.display.update()
-                self.clock.tick(Window.FPS)
+                dt = self.clock.tick(settings.FPS)
         except:
             import traceback
             logging.debug(traceback.format_exc())
