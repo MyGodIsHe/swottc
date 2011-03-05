@@ -25,6 +25,7 @@ class World(object):
         self.herbivores = 0
         self.predators = 0
         self.turns = 0
+        self.deaths = 0
         for x in xrange(cols):
             self._field.append([ None for y in xrange(rows)])
 
@@ -52,6 +53,7 @@ class World(object):
                 self._field[obj.x][obj.y] = None
                 self._objects.remove(obj)
                 self.info_update_del(obj)
+                self.deaths += 1
             self.stabilize()
 
             self.turns += 1
