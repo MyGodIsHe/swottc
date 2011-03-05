@@ -16,9 +16,9 @@ from window import Window
 if __name__ == '__main__':
     usage = "usage: %prog -d 3 -c 50 -r 50"
     parser = OptionParser(usage=usage)
-    parser.add_option("-d", "--density", dest="density", type="int", help="The population density of 1 to 100", default=3)
-    parser.add_option("-c", "--cols", dest="cols", type="int", help="Number of cells along the horizontal", default=50)
-    parser.add_option("-r", "--rows", dest="rows", type="int", help="Number of cells along the vertical", default=50)
+    parser.add_option("-d", "--density", dest="density", type="int", help="The population density of 1 to 100", default=20)
+    parser.add_option("-c", "--cols", dest="cols", type="int", help="Number of cells along the horizontal", default=20)
+    parser.add_option("-r", "--rows", dest="rows", type="int", help="Number of cells along the vertical", default=20)
 
     (options, args) = parser.parse_args()
     if options.density < 1 or options.density > 100:

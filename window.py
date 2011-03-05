@@ -140,9 +140,6 @@ class Window(object):
                 # check for events
                 self.events()
 
-                if self.is_force:
-                    continue
-
                 # draw the black background onto the surface
                 self.world_surface.fill(self.background)
 
@@ -156,10 +153,11 @@ class Window(object):
                 scaled_surf_pos = scaled_surf.get_rect(centerx=self.position[0], centery=self.position[1])
                 self.surface.blit(scaled_surf, scaled_surf_pos)
 
-                self.draw_text("Pr: %2i, He: %2i, Pl: %2i, Re: %2i" % (self.world.predators,
-                                                                   self.world.herbivores,
-                                                                   self.world.plants,
-                                                                   self.world.reproductions),
+                self.draw_text("Turns: %i, Pr: %2i, He: %2i, Pl: %2i, Re: %2i" % (self.world.turns,
+                                                                                  self.world.predators,
+                                                                                  self.world.herbivores,
+                                                                                  self.world.plants,
+                                                                                  self.world.reproductions),
                                10, 10)
 
                 pygame.display.flip()

@@ -103,6 +103,10 @@ class Base(Actor):
 
     def turn(self, world):
         self.turns += 1
+        if self.is_alive:
+            self.aging()
+        else:
+            self.decomposition()
 
     def health_up(self, hp):
         if self.current_health + hp > self.base_health:
@@ -139,6 +143,13 @@ class Base(Actor):
             ch_down = 0
             bh_down = self._base_health_down(hp)
         return ch_down, bh_down
+
+    def aging(self):
+        pass
+
+    def decomposition(self):
+        if self.turns % 10 == 0:
+            self._base_health_down(10)
 
     @property
     def is_nothing(self):

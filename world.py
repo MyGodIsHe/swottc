@@ -1,7 +1,7 @@
 from utils import Timer
 from constans import *
 import logging
-from random import randint, choice
+from random import randint
 
 
 class World(object):
@@ -24,6 +24,7 @@ class World(object):
         self.plants = 0
         self.herbivores = 0
         self.predators = 0
+        self.turns = 0
         for x in xrange(cols):
             self._field.append([ None for y in xrange(rows)])
 
@@ -50,7 +51,10 @@ class World(object):
                 logging.debug("Dead: %r, turns: %s, history: %s" % (obj, obj.turns, repr(obj.history.read())))
                 self._field[obj.x][obj.y] = None
                 self._objects.remove(obj)
+                self.info_update_del(obj)
             self.stabilize()
+
+            self.turns += 1
         except:
             import traceback
             logging.debug(traceback.format_exc())
@@ -77,7 +81,7 @@ class World(object):
 
     def add_creature(self, creature):
         if not self.check_position(creature.x, creature.y):
-            raise Exception()
+            return False
         if self._field[creature.x][creature.y] is not None:
             return False
         self._objects.append(creature)
@@ -93,6 +97,15 @@ class World(object):
             self.herbivores += 1
         elif name == 'Plant':
             self.plants += 1
+
+    def info_update_del(self, creature):
+        name = creature.__class__.__name__
+        if name == 'Predator':
+            self.predators -= 1
+        elif name == 'Herbivore':
+            self.herbivores -= 1
+        elif name == 'Plant':
+            self.plants -= 1
 
     def add_creature_square(self, creature):
         if self.add_creature(creature): return True
@@ -163,6 +176,8 @@ class World(object):
                 pos = self.get_rnd_free_space()
                 if pos is None:
                     break
-                cls = choice([Predator, Herbivore, Plant])
+                cs = [self.predators, self.herbivores, self.plants]
+                n = cs.index(min(cs))
+                cls = [Predator, Herbivore, Plant][n]
                 creature = cls(x=pos[0], y=pos[1])
                 self.add_creature(creature)

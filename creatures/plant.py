@@ -18,3 +18,7 @@ class Plant(Base):
 
         if self.turns % 100 == 0:
             self.reproductive = self.base_health
+
+    def aging(self):
+        if self.turns % 10 == 0:
+            self.health_down(1)
