@@ -62,5 +62,5 @@ class Kohonen(object):
         for i, ws in enumerate(child.whi):
             child.whi[i] = one.whi[i] if random.randint(0, 1) else two.whi[i]
         for i, ws in enumerate(child.woh):
-            child.woh[i] = one.woh[i] if random.randint(0, 1) else tho.woh[i]
+            child.woh[i] = one.woh[i] if random.randint(0, 1) else two.woh[i]
         return child

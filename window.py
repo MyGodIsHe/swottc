@@ -42,7 +42,8 @@ class Window(object):
         self.world_surface = pygame.Surface(self.size)
 
         # set up fonts
-        self.font = pygame.font.SysFont(None, 48)
+        self.font = pygame.font.SysFont(None, 16)
+        self.font_color = Color.by_name('white')
 
         self.downpos = None
 
@@ -79,6 +80,12 @@ class Window(object):
         world.start(0.1)
         return world
 
+
+    def draw_text(self, text, x, y):
+        textobj = self.font.render(text, 1, self.font_color)
+        textrect = textobj.get_rect()
+        textrect.topleft = (x, y)
+        self.surface.blit(textobj, textrect)
 
     def restart(self):
         World.clear_all()
@@ -133,6 +140,9 @@ class Window(object):
                 # check for events
                 self.events()
 
+                if self.is_force:
+                    continue
+
                 # draw the black background onto the surface
                 self.world_surface.fill(self.background)
 
@@ -145,6 +155,12 @@ class Window(object):
                 self.surface.fill(self.background)
                 scaled_surf_pos = scaled_surf.get_rect(centerx=self.position[0], centery=self.position[1])
                 self.surface.blit(scaled_surf, scaled_surf_pos)
+
+                self.draw_text("Pr: %2i, He: %2i, Pl: %2i, Re: %2i" % (self.world.predators,
+                                                                   self.world.herbivores,
+                                                                   self.world.plants,
+                                                                   self.world.reproductions),
+                               10, 10)
 
                 pygame.display.flip()
 

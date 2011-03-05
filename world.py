@@ -20,6 +20,10 @@ class World(object):
         self._field = []
         self._timer = None
         self.queue = []
+        self.reproductions = 0
+        self.plants = 0
+        self.herbivores = 0
+        self.predators = 0
         for x in xrange(cols):
             self._field.append([ None for y in xrange(rows)])
 
@@ -78,7 +82,17 @@ class World(object):
             return False
         self._objects.append(creature)
         self._field[creature.x][creature.y] = creature
+        self.info_update_add(creature)
         return True
+
+    def info_update_add(self, creature):
+        name = creature.__class__.__name__
+        if name == 'Predator':
+            self.predators += 1
+        elif name == 'Herbivore':
+            self.herbivores += 1
+        elif name == 'Plant':
+            self.plants += 1
 
     def add_creature_square(self, creature):
         if self.add_creature(creature): return True

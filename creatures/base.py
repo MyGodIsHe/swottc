@@ -162,7 +162,7 @@ class Mammals(Base):
             return
         eye = Eye(self.course, world, (self.x, self.y))
         if self.is_ready_reproduction:
-            self.reproduction(eye.creatures, world)
+            self.reproduction_by_division(world)
         answer = self.brain.signal_eye(eye)
         if ACTION_GO == answer:
             world.move_creature(self)
@@ -184,7 +184,7 @@ class Mammals(Base):
     def hunger(self):
         raise Exception("Need to implement")
 
-    def reproduction(self, creatures, world):
+    def reproduction_by_mating(self, creatures, world):
         variants = filter(lambda x: isinstance(x, self.__class__) and x.is_ready_reproduction, creatures)
         if variants:
             partner = choice(variants)
@@ -194,6 +194,19 @@ class Mammals(Base):
             child.brain = Kohonen.generate(child.brain, self.brain, partner.brain)
             is_add = world.add_creature_square(child)
             self.history.append("Birth %s %s" % (is_add, child))
+
+    def reproduction_by_division(self, world):
+        variants = filter(lambda x: isinstance(x, self.__class__) and x.is_ready_reproduction, world._objects)
+        if variants:
+            partner = choice(variants)
+            child = self.__class__(x=self.x, y=self.y)
+            child.brain = Kohonen.generate(child.brain, self.brain, partner.brain)
+            is_add = world.add_creature_square(child)
+            if is_add:
+                partner.reproductive = 0
+                self.reproductive = 0
+                world.reproductions += 1
+                self.history.append("Birth %s %s" % (is_add, child))
 
     def reproductive_up(self, hp):
         if self.reproductive + hp > self.base_health:
