@@ -8,9 +8,11 @@ def sigmoid(value):
 
 
 class Kohonen(object):
-    def __init__(self, ins, hidden, outs):
+    def __init__(self, ins=0, hidden=0, outs=0):
         self.whi = []
         self.woh = []
+        if ins == hidden == outs == 0:
+            return
         for w in xrange(hidden):
             self.whi.append([random.random() * 2 - 1 for i in xrange(ins)])
         for w in xrange(outs):
@@ -56,6 +58,21 @@ class Kohonen(object):
                            eye.action.predators,
                            eye.action.herbivores,
                            eye.action.plants)
+
+    def copy(self):
+        obj = Kohonen()
+        obj.whi = list(self.whi)
+        obj.woh = list(self.woh)
+        return obj
+
+    def mutate(self, n=1):
+        for i in xrange(n):
+            wch = self.whi if random.randint(0, 1) else self.woh
+            n = random.randint(0, len(wch) - 1)
+            wch = wch[n]
+            n = random.randint(0, len(wch) - 1)
+            wch[n] = random.random() * 2 - 1
+        return self
 
     @staticmethod
     def generate(child, one, two):

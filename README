@@ -1,6 +1,6 @@
 INSTALL
 --------------------------------------------------------------------------------
-sudo apt-get install python-opengl
+sudo apt-get install python-pygame
 
 
 USAGE

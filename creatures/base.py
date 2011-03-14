@@ -206,7 +206,7 @@ class Mammals(Base):
             is_add = world.add_creature_square(child)
             self.history.append("Birth %s %s" % (is_add, child))
 
-    def reproduction_by_division(self, world):
+    def reproduction_by_simple_mating(self, world):
         variants = filter(lambda x: isinstance(x, self.__class__) and x.is_ready_reproduction, world._objects)
         if variants:
             partner = choice(variants)
@@ -218,6 +218,15 @@ class Mammals(Base):
                 self.reproductive = 0
                 world.reproductions += 1
                 self.history.append("Birth %s %s" % (is_add, child))
+
+    def reproduction_by_division(self, world):
+        child = self.__class__(x=self.x, y=self.y)
+        child.brain = self.brain.copy().mutate()
+        is_add = world.add_creature_square(child)
+        if is_add:
+            self.reproductive = 0
+            world.reproductions += 1
+            self.history.append("Birth %s %s" % (is_add, child))
 
     def reproductive_up(self, hp):
         if self.reproductive + hp > self.base_health:
