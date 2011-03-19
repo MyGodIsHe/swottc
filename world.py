@@ -1,6 +1,9 @@
+from creatures import Predator, Herbivore, Plant
+from creatures.base import Mammals
 from utils import Timer
 from constans import *
 import logging
+import json
 from random import randint
 
 
@@ -183,3 +186,56 @@ class World(object):
                 cls = [Predator, Herbivore, Plant][n]
                 creature = cls(x=pos[0], y=pos[1])
                 self.add_creature(creature)
+
+    @staticmethod
+    def load_json(file_path):
+        fp = open(file_path)
+        data = json.load(fp)
+        fp.close()
+
+        world = World(cols=data['cols'], rows=data['rows'])
+
+        constructors = dict((unicode(i.__name__), i) for i in [Predator, Herbivore, Plant])
+
+        for obj in data['objects']:
+            Create = constructors[obj['type']]
+            creature = Create(x=obj['x'], y=obj['y'])
+            creature.reproductive = obj['reproductive']
+            creature.current_health = obj['current_health']
+            creature.base_health = obj['base_health']
+            if isinstance(obj, Mammals):
+                creature.course = obj['course']
+                creature.brain.whi = obj['brain']['whi']
+                creature.brain.woh = obj['brain']['woh']
+            world.add_creature(creature)
+        world.start(0.1)
+        return world
+
+    def save_json(self, file_path):
+        objects = []
+        for obj in self._objects:
+            data = {
+                'type': obj.__class__.__name__,
+                'x': obj.x,
+                'y': obj.y,
+                'reproductive': obj.reproductive,
+                'base_health': obj.base_health,
+                'current_health': obj.current_health,
+            }
+            if isinstance(obj, Mammals):
+                data.update({
+                    'course': obj.course,
+                    'brain': {
+                        'whi': obj.brain.whi,
+                        'woh': obj.brain.woh,
+                    },
+                })
+            objects.append(data)
+        data = {
+            'cols': self.cols,
+            'rows': self.rows,
+            'objects': objects,
+        }
+        fp = open(file_path, 'w')
+        json.dump(data, fp, indent = 4)
+        fp.close()

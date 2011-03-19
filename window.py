@@ -15,22 +15,28 @@ class Window(object):
     SIZE = 600, 600
     CELL_SIZE = 60
 
-    def __init__(self, log, colors, options):
-        self.density = options.density
-        self.cols = options.cols
-        self.rows = options.rows
-        self.is_force = False
-        self.size = (self.cols * Window.CELL_SIZE, self.rows * Window.CELL_SIZE)
-        self.scale = float(min(Window.SIZE)) / max(self.size)
-        self.position = [Window.SIZE[0]/2, Window.SIZE[0]/2]
-
+    def __init__(self, log, colors, options, args):
         logging.basicConfig(filename=log, level=logging.DEBUG, filemode='w')
 
         Color.init(colors)
 
         self.background = Color.by_html('c6cfbf')
 
-        self.world = self.create_world()
+        if len(args) > 0:
+            self.world = World.load_json(args[0])
+            self.cols = self.world.cols
+            self.rows = self.world.rows
+            self.density = int(100.0 * len(self.world._objects) / (self.cols * self.rows))
+        else:
+            self.cols = options.cols
+            self.rows = options.rows
+            self.density = options.density
+            self.world = self.create_world()
+
+        self.is_force = False
+        self.size = (self.cols * Window.CELL_SIZE, self.rows * Window.CELL_SIZE)
+        self.scale = float(min(Window.SIZE)) / max(self.size)
+        self.position = [Window.SIZE[0]/2, Window.SIZE[0]/2]
 
         # set up pygame
         pygame.init()
@@ -106,6 +112,9 @@ class Window(object):
                     sys.exit()
                 elif event.key == K_r:
                     self.restart()
+                elif event.key == K_s:
+                    self.world.save_json('./current_map.json')
+                    print "Save complete"
                 elif event.key == K_f:
                     self.is_force = not self.is_force
                     if self.is_force:

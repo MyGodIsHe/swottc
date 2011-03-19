@@ -29,5 +29,6 @@ if __name__ == '__main__':
         parser.error("rows of 3 to 1000")
     window = Window(log='debug.log',
                     colors='./rgb.txt',
-                    options=options,)
+                    options=options,
+                    args=args)
     window.loop()
