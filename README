@@ -1,6 +1,6 @@
 INSTALL FOR UBUNTU
 --------------------------------------------------------------------------------
-sudo apt-get install python-pygame
+sudo apt-get install python-pygame python-opengl
 
 
 INSTALL FOR WINDOWS
