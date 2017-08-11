@@ -4,6 +4,6 @@ ANIMATIONS = {
     'Predator': 'wolf',
 }
 
-ANIMATION_PATH = 'grf/'
+ANIMATION_PATH = 'data/'
 
 FPS = 40

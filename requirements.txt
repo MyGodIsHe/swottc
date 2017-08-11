@@ -1,3 +1,4 @@
 pillow>=4.2.1
 pygame>=1.9.3
 pyopengl>=3.1.0
+git+git://github.com/ilya-chistyakov/pyro-tools.git#egg=pyro-tools

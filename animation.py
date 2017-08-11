@@ -1,7 +1,7 @@
 import os
 import pygame
-from grf.actor import act_open
-from grf.sprite import spr_open
+from pyro_tools.actor import act_open
+from pyro_tools.sprite import spr_open
 import settings
 
 
