@@ -7,7 +7,7 @@ __all__ = ['Frame', 'Frames', 'srp_open']
 
 import sys
 import os
-import Image
+from PIL import Image
 from struct import unpack
 
 
